@@ -1,0 +1,116 @@
+# This file will be used to create a deployment in the Kubernetes cluster.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: voting-app-deployment
+  namespace: test-cluster-namespace
+spec:
+  replicas: 2 
+  selector:
+    matchLabels:
+      app: voting-app
+  template:
+    metadata:
+      labels:
+        app: voting-app 
+    spec:
+      containers:
+      - name: voting-container
+        image: jayanta/voting-application:votingapp-30020756077
+        ports:
+        - containerPort: 80
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: results-app-deployment
+  namespace: test-cluster-namespace
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: results-app
+  template:
+    metadata:
+      labels:
+        app: results-app
+    spec:
+      containers:
+      - name: results-container
+        image: jayanta/voting-application:resultapp-30020757943
+        ports:
+        - containerPort: 80
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker-app-deployment
+  namespace: test-cluster-namespace
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: worker-app
+  template:
+    metadata:
+      labels: 
+        app: worker-app
+    spec:
+      containers:
+      - name: worker-container
+        image: jayanta/voting-application:worker-image
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-deployment
+  namespace: test-cluster-namespace
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+      - name: redis-container
+        image: redis:alpine
+        imagePullPolicy: IfNotPresent
+
+---
+
+apiVersion: apps/v1 
+kind: Deployment
+metadata:
+  name: db-deployment
+  namespace: test-cluster-namespace
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db
+  template:
+    metadata:
+      labels:
+        app: db
+    spec:
+      containers:
+      - name: db-container
+        image: postgres:alpine
+        imagePullPolicy: IfNotPresent 
+        env:
+        - name: POSTGRES_USER
+          value: "postgres"
+        - name: POSTGRES_PASSWORD
+          value: "postgres"
+        - name: POSTGRES_DB
+          value: "votingdb" 

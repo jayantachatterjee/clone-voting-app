@@ -1,0 +1,6 @@
+#  This file will be use to create a namespace in the Kubernetes cluster.
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: test-cluster-namespace

@@ -1,0 +1,85 @@
+name: Result Application CI/CD
+
+on:
+  push:
+    branches:
+      - master
+      - main
+
+
+permissions:
+  id-token: write
+  contents: write
+
+env:
+  AWS_REGION: ap-south-1
+  ECR_REPOSITORY: voting-application
+  IMAGE_TAG: result-${{ github.run_id }}
+
+jobs:
+  build-test-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: result/package-lock.json
+
+      - name: Install Dependencies
+        working-directory: result
+        run: |
+          npm ci
+
+      - name: Run Tests
+        working-directory: result
+        run: |
+          npm test
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and Push Result Image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./result
+          push: true
+          tags: |
+            ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+
+      - name: Update Result Deployment
+        run: |
+          ECR_IMAGE="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}"
+
+          sed -i "/name: results-container/{n;s|image:.*|image: ${ECR_IMAGE}|;}" deploymentk8/result-deployment.yml
+
+      - name: Commit Updated Result Deployment
+        run: |
+          git config user.name ${{secrets.GIT_USERNAME}}
+          git config user.email ${{secrets.GIT_EMAIL}}
+
+          git add deploymentk8/result-deployment.yml
+
+
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+
+          git commit -m "Update result image to ${IMAGE_TAG}"
+
+          git pull --rebase origin master
+
+          git push origin HEAD:master 

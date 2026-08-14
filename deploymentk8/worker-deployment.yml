@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker-app-deployment
+  namespace: test-cluster-namespace
+  labels:
+    app: worker-app
+
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: worker-app
+
+  template:
+    metadata:
+      labels:
+        app: worker-app
+
+    spec:
+      containers:
+      - name: worker-container
+        image: 224039896067.dkr.ecr.ap-south-1.amazonaws.com/voting-application:worker-30907602067
+        imagePullPolicy: Always
