@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
       - name: results-container
-        image: 224039896067.dkr.ecr.ap-south-1.amazonaws.com/voting-application:result-31779775268
+        image: 224039896067.dkr.ecr.ap-south-1.amazonaws.com/voting-application:result-31780001804
         imagePullPolicy: Always
 
         ports:
