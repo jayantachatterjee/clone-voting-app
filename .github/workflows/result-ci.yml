@@ -40,18 +40,6 @@ jobs:
         run: |
           npm test
 
-      - name: Debug OIDC Token Claims
-        run: |
-          # Request token from GitHub Actions OIDC provider
-          TOKEN_RESPONSE=$(curl -s -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=sts.amazonaws.com")
-          JWT=$(echo "$TOKEN_RESPONSE" | jq -r '.value')
-          # Decode the payload segment of the JWT
-          PAYLOAD=$(echo "$JWT" | cut -d'.' -f2)
-          # Add padding if necessary for base64 decoding
-          PADDING=$(($(echo -n "$PAYLOAD" | wc -c) % 4))
-          if [ $PADDING -eq 2 ]; then PAYLOAD="${PAYLOAD}=="; elif [ $PADDING -eq 3 ]; then PAYLOAD="${PAYLOAD}="; fi
-          echo "$PAYLOAD" | base64 --decode | jq .
-
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
