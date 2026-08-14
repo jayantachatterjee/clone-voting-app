@@ -6,7 +6,6 @@ on:
       - master
       - main
 
-
 permissions:
   id-token: write
   contents: write
@@ -27,8 +26,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
           cache-dependency-path: result/package-lock.json
 
       - name: Install Dependencies
@@ -59,6 +58,18 @@ jobs:
           tags: |
             ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
 
+      - name: Debug OIDC Token Claims
+        run: |
+          # Request token from GitHub Actions OIDC provider
+          TOKEN_RESPONSE=$(curl -s -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=sts.amazonaws.com")
+          JWT=$(echo "$TOKEN_RESPONSE" | jq -r '.value')
+          # Decode the payload segment of the JWT
+          PAYLOAD=$(echo "$JWT" | cut -d'.' -f2)
+          # Add padding if necessary for base64 decoding
+          PADDING=$(($(echo -n "$PAYLOAD" | wc -c) % 4))
+          if [ $PADDING -eq 2 ]; then PAYLOAD="${PAYLOAD}=="; elif [ $PADDING -eq 3 ]; then PAYLOAD="${PAYLOAD}="; fi
+          echo "$PAYLOAD" | base64 --decode | jq .
+
       - name: Update Result Deployment
         run: |
           ECR_IMAGE="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}"
@@ -82,4 +93,4 @@ jobs:
 
           git pull --rebase origin master
 
-          git push origin HEAD:master 
+          git push origin HEAD:master
