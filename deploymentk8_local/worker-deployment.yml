@@ -20,6 +20,9 @@ spec:
 
     spec:
       containers:
-      - name: worker-container
-        image: 224039896067.dkr.ecr.ap-south-1.amazonaws.com/voting-application:worker-30907602067
-        imagePullPolicy: Always
+        - name: worker-container
+          image: 224039896067.dkr.ecr.ap-south-1.amazonaws.com/voting-application:worker-30907602067
+          imagePullPolicy: Always
+
+    imagePullSecrets:
+      - name: ECR_TOKEN

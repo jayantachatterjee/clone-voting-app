@@ -20,9 +20,12 @@ spec:
 
     spec:
       containers:
-      - name: results-container
-        image: 224039896067.dkr.ecr.ap-south-1.amazonaws.com/voting-application:result-31780001804
-        imagePullPolicy: Always
+        - name: results-container
+          image: 224039896067.dkr.ecr.ap-south-1.amazonaws.com/voting-application:result-31780001804
+          imagePullPolicy: Always
 
-        ports:
-        - containerPort: 80
+          ports:
+            - containerPort: 80
+
+      imagePullSecrets:
+        - name: ECR_TOKEN
