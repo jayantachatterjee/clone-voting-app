@@ -1,0 +1,63 @@
+# This is a simple service configuration file for Kubernetes. It defines a service that will expose the application running in the cluster.
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: voting-service
+  namespace: test-cluster-namespace
+spec:
+  selector:
+    app: voting-app
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 80
+  type: NodePort
+
+---
+
+apiVersion: v1
+kind: Service
+metadata: 
+  name: results-service
+  namespace: test-cluster-namespace
+spec:
+  selector:
+    app: results-app
+  ports:
+    - protocol: TCP
+      port: 8081
+      targetPort: 80
+  type: NodePort
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  namespace: test-cluster-namespace
+spec:
+  selector:
+    app: redis
+  ports:
+    - protocol: TCP
+      port: 6379
+      targetPort: 6379
+  type: ClusterIP
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: db
+  namespace: test-cluster-namespace
+spec:
+  selector:
+    app: db
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
+  type: ClusterIP

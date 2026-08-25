@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: results-app-deployment
+  namespace: test-cluster-namespace
+  labels:
+    app: results-app
+
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: results-app
+
+  template:
+    metadata:
+      labels:
+        app: results-app
+
+    spec:
+      containers:
+      - name: results-container
+        image: 224039896067.dkr.ecr.ap-south-1.amazonaws.com/voting-application:result-31779775268
+        imagePullPolicy: Always
+
+        ports:
+        - containerPort: 80
