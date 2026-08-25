@@ -62,7 +62,7 @@ jobs:
         run: |
           ECR_IMAGE="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}"
 
-          sed -i "/name: results-container/{n;s|image:.*|image: ${ECR_IMAGE}|;}" deploymentk8/result-deployment.yml
+          sed -i "/name: results-container/{n;s|image:.*|image: ${ECR_IMAGE}|;}" deploymentk8_local/result-deployment.yml
 
       - name: Commit Updated Result Deployment
         run: |

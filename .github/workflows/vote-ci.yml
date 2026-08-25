@@ -64,7 +64,7 @@ jobs:
         run: |
           ECR_IMAGE="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}"
 
-          sed -i "/name: voting-container/{n;s|image:.*|image: ${ECR_IMAGE}|;}" deploymentk8/vote-deployment.yml
+          sed -i "/name: voting-container/{n;s|image:.*|image: ${ECR_IMAGE}|;}" deploymentk8_local/vote-deployment.yml
 
       - name: Commit Updated Vote Deployment
         run: |
