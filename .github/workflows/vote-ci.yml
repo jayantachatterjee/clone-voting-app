@@ -17,20 +17,19 @@ env:
   ECR_REPOSITORY: voting-application
   IMAGE_TAG: voting-${{ github.run_id }}
 
-jobs: 
+jobs:
   build-test-push:
     name: Build, Test and Push Vote Image
     runs-on: ubuntu-latest
 
     steps:
-
       - name: Checkout Repository
         uses: actions/checkout@v4
 
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
 
       - name: Install Dependencies
         working-directory: vote
@@ -72,7 +71,8 @@ jobs:
           git config user.name ${{secrets.GIT_USERNAME}}
           git config user.email ${{secrets.GIT_EMAIL}}
 
-          git add deploymentk8/vote-deployment.yml
+          # Adjust The path for local and EKS Deployment
+          git add deploymentk8_local/vote-deployment.yml
 
           if git diff --cached --quiet; then
             echo "No changes to commit"
@@ -83,4 +83,4 @@ jobs:
 
           git pull --rebase origin master
 
-          git push origin HEAD:master 
+          git push origin HEAD:master
