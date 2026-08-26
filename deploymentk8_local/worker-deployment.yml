@@ -25,4 +25,4 @@ spec:
           imagePullPolicy: Always
 
     imagePullSecrets:
-      - name: ECR_TOKEN
+      - name: ecr-secret
