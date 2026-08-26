@@ -28,4 +28,4 @@ spec:
             - containerPort: 80
 
       imagePullSecrets:
-        - name: ECR_TOKEN
+        - name: $(aws ecr get-login-password --region ap-south-1)
